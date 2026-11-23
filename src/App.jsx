@@ -154,8 +154,8 @@ function AdminOrders({s,set}){
 
 function AdminProducts({s,set}){
  const [ed,setEd]=useState(null);const upd=(id,k,v)=>set(p=>({...p,products:p.products.map(x=>x.id===id?{...x,[k]:v}:x)}));
- const save=()=>{const row={...ed,price:ed.price===''||ed.price==null?null:+ed.price,sale:ed.sale===''||ed.sale==null?null:+ed.sale,demo:false,type:ed.cat==='waffen'?(ed.type||'sword'):ed.type,variants:ed.vtxt.split('\n').filter(l=>l.trim()).map(l=>{const [a,b]=l.split(':');return{name:a.trim(),price:+b}}),attrs:ed.atxt.split('\n').map(x=>x.trim()).filter(Boolean)};delete row.vtxt;delete row.atxt;
-  set(p=>({...p,products:ed.isNew?[...p.products,row]:p.products.map(x=>x.id===row.id?row:x)}));setEd(null)};
+ const save=()=>{const row={...ed,price:ed.price===''||ed.price==null?null:+ed.price,sale:ed.sale===''||ed.sale==null?null:+ed.sale,demo:false,type:ed.cat==='waffen'?(ed.type||'sword'):ed.type,variants:ed.vtxt.split('\n').filter(l=>l.trim()).map(l=>{const [a,b]=l.split(':');return{name:a.trim(),price:+b}}),attrs:ed.atxt.split('\n').map(x=>x.trim()).filter(Boolean)};delete row.vtxt;delete row.atxt;delete row.isNew;
+  set(p=>({...p,products:p.products.some(x=>x.id===row.id)?p.products.map(x=>x.id===row.id?row:x):[...p.products,row]}));setEd(null)};
  const f=k=>e=>setEd({...ed,[k]:e.target.value});
  const up=async e=>{const file=e.target.files[0];if(!file)return;const path='products/'+Date.now()+'-'+file.name.replace(/[^\w.]/g,'_');const {error}=await sb.storage.from('media').upload(path,file);if(error)return alert(error.message);setEd(x=>({...x,tex:sb.storage.from('media').getPublicUrl(path).data.publicUrl}))};
  if(ed)return <div className="card max-w-2xl space-y-4"><h2 className="font-display text-2xl">{ed.isNew?'Neues Produkt':'Produkt bearbeiten'}</h2><div className="grid sm:grid-cols-2 gap-4">
